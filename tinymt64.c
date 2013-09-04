@@ -42,8 +42,12 @@ static const uint32_t mat2 = TINYMT64_MAT2;
 static const uint64_t tmat = TINYMT64_TMAT;
 
 void tinymt64_init(uint64_t * random, uint64_t seed);
+#if 0
 void tinymt64_init_by_array(uint64_t * random, const uint64_t init_key[],
 			    int key_length);
+#endif
+uint64_t tinymt64_generate_uint64(uint64_t * random);
+double tinymt64_generate_double(uint64_t * random);
 
 #if defined(__GNUC__)
 /**
@@ -150,7 +154,7 @@ static double uint64_temper_conv_open(uint64_t * random) {
  * @param random tinymt internal status
  * @return 64-bit unsigned integer r (0 <= r < 2^64)
  */
-static uint64_t tinymt64_generate_uint64(uint64_t * random) {
+uint64_t tinymt64_generate_uint64(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper(random);
 }
@@ -161,11 +165,12 @@ static uint64_t tinymt64_generate_uint64(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (0.0 <= r < 1.0)
  */
-static double tinymt64_generate_double(uint64_t * random) {
+double tinymt64_generate_double(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper(random) * TINYMT64_MUL;
 }
 
+#if 0
 /**
  * This function outputs floating point number from internal state.
  * This function is implemented using union trick.
@@ -209,6 +214,7 @@ static double tinymt64_generate_doubleOO(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper_conv_open(random) - 1.0;
 }
+#endif
 
 /**
  * @file tinymt64.c
@@ -228,6 +234,7 @@ static double tinymt64_generate_doubleOO(uint64_t * random) {
 
 #define MIN_LOOP 8
 
+#if 0
 /**
  * This function represents a function used in the initialization
  * by init_by_array
@@ -247,6 +254,7 @@ static uint64_t ini_func1(uint64_t x) {
 static uint64_t ini_func2(uint64_t x) {
     return (x ^ (x >> 59)) * UINT64_C(58885565329898161);
 }
+#endif
 
 /**
  * This function certificate the period of 2^127-1.
@@ -277,6 +285,7 @@ void tinymt64_init(uint64_t * random, uint64_t seed) {
     period_certification(random);
 }
 
+#if 0
 /**
  * This function initializes the internal state array,
  * with an array of 64-bit unsigned integers used as seeds
@@ -338,3 +347,4 @@ void tinymt64_init_by_array(uint64_t * random, const uint64_t init_key[],
     random[1] = st[2] ^ st[3];
     period_certification(random);
 }
+#endif

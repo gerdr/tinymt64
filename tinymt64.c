@@ -51,6 +51,11 @@
 #  define TINYMT64_TMAT 0x9746beffffbffffe
 #endif
 
+/*
+ * Initialization loop
+ */
+#define MIN_LOOP 8
+
 static const uint32_t mat1 = TINYMT64_MAT1;
 static const uint32_t mat2 = TINYMT64_MAT2;
 static const uint64_t tmat = TINYMT64_TMAT;
@@ -110,8 +115,6 @@ double tinymt64_generate_double(uint64_t * random) {
     return uint64_temper(random) * TINYMT64_MUL;
 }
 
-#define MIN_LOOP 8
-
 /**
  * This function initializes the internal state array with a 64-bit
  * unsigned integer seed.
@@ -122,8 +125,8 @@ void tinymt64_init(uint64_t * random, uint64_t seed) {
     random[0] = seed ^ ((uint64_t)mat1 << 32);
     random[1] = mat2 ^ tmat;
     for (int i = 1; i < MIN_LOOP; i++) {
-	random[i & 1] ^= i + UINT64_C(6364136223846793005)
-	    * (random[(i - 1) & 1]
-	       ^ (random[(i - 1) & 1] >> 62));
+        random[i & 1] ^= i + UINT64_C(6364136223846793005)
+            * (random[(i - 1) & 1]
+               ^ (random[(i - 1) & 1] >> 62));
     }
 }

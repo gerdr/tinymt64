@@ -49,6 +49,7 @@ void tinymt64_init_by_array(uint64_t * random, const uint64_t init_key[],
 uint64_t tinymt64_generate_uint64(uint64_t * random);
 double tinymt64_generate_double(uint64_t * random);
 
+#if 0
 #if defined(__GNUC__)
 /**
  * This function always returns 127
@@ -63,6 +64,7 @@ static int tinymt64_get_mexp(
 static int tinymt64_get_mexp(uint64_t * random) {
     return TINYMT64_MEXP;
 }
+#endif
 #endif
 
 /**
@@ -103,6 +105,7 @@ static uint64_t uint64_temper(uint64_t * random) {
     return x;
 }
 
+#if 0
 /**
  * This function outputs floating point number from internal state.
  * Users should not call this function directly.
@@ -148,6 +151,7 @@ static double uint64_temper_conv_open(uint64_t * random) {
 	| UINT64_C(0x3ff0000000000001);
     return conv.d;
 }
+#endif
 
 /**
  * This function outputs 64-bit unsigned integer from internal state.
@@ -254,21 +258,19 @@ static uint64_t ini_func1(uint64_t x) {
 static uint64_t ini_func2(uint64_t x) {
     return (x ^ (x >> 59)) * UINT64_C(58885565329898161);
 }
-#endif
 
 /**
  * This function certificate the period of 2^127-1.
  * @param random tinymt state vector.
  */
 static void period_certification(uint64_t * random) {
-#if 0
     if ((random[0] & TINYMT64_MASK) == 0 &&
 	random[1] == 0) {
 	random[0] = 'T';
 	random[1] = 'M';
     }
-#endif
 }
+#endif
 
 /**
  * This function initializes the internal state array with a 64-bit
@@ -284,7 +286,9 @@ void tinymt64_init(uint64_t * random, uint64_t seed) {
 	    * (random[(i - 1) & 1]
 	       ^ (random[(i - 1) & 1] >> 62));
     }
+#if 0
     period_certification(random);
+#endif
 }
 
 #if 0

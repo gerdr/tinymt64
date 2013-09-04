@@ -25,16 +25,30 @@
 #define TINYMT64_MUL (1.0 / 18446744073709551616.0)
 
 /*
- * tinymt64 internal state vector and parameters
+ * tinymt64 default parameters
+ */
+#ifndef TINYMT64_MAT1
+#  define TINYMT64_MAT1 0x7a840f50
+#endif
+#ifndef TINYMT64_MAT2
+#  define TINYMT64_MAT2 0xf3d8fcf6
+#endif
+#ifndef TINYMT64_TMAT
+#  define TINYMT64_TMAT 0x9746beffffbffffe
+#endif
+
+/*
+ * tinymt64 internal state vector
  */
 struct TINYMT64_T {
     uint64_t status[2];
-    uint32_t mat1;
-    uint32_t mat2;
-    uint64_t tmat;
 };
 
 typedef struct TINYMT64_T tinymt64_t;
+
+static const uint32_t mat1 = TINYMT64_MAT1;
+static const uint32_t mat2 = TINYMT64_MAT2;
+static const uint64_t tmat = TINYMT64_TMAT;
 
 void tinymt64_init(tinymt64_t * random, uint64_t seed);
 void tinymt64_init_by_array(tinymt64_t * random, const uint64_t init_key[],
@@ -72,8 +86,8 @@ inline static void tinymt64_next_state(tinymt64_t * random) {
     x ^= x << TINYMT64_SH1;
     random->status[0] = random->status[1];
     random->status[1] = x;
-    random->status[0] ^= -((int64_t)(x & 1)) & random->mat1;
-    random->status[1] ^= -((int64_t)(x & 1)) & (((uint64_t)random->mat2) << 32);
+    random->status[0] ^= -((int64_t)(x & 1)) & mat1;
+    random->status[1] ^= -((int64_t)(x & 1)) & (((uint64_t)mat2) << 32);
 }
 
 /**
@@ -90,7 +104,7 @@ inline static uint64_t tinymt64_temper(tinymt64_t * random) {
     x = random->status[0] + random->status[1];
 #endif
     x ^= random->status[0] >> TINYMT64_SH8;
-    x ^= -((int64_t)(x & 1)) & random->tmat;
+    x ^= -((int64_t)(x & 1)) & tmat;
     return x;
 }
 
@@ -112,7 +126,7 @@ inline static double tinymt64_temper_conv(tinymt64_t * random) {
     x = random->status[0] + random->status[1];
 #endif
     x ^= random->status[0] >> TINYMT64_SH8;
-    conv.u = ((x ^ (-((int64_t)(x & 1)) & random->tmat)) >> 12)
+    conv.u = ((x ^ (-((int64_t)(x & 1)) & tmat)) >> 12)
 	| UINT64_C(0x3ff0000000000000);
     return conv.d;
 }
@@ -135,7 +149,7 @@ inline static double tinymt64_temper_conv_open(tinymt64_t * random) {
     x = random->status[0] + random->status[1];
 #endif
     x ^= random->status[0] >> TINYMT64_SH8;
-    conv.u = ((x ^ (-((int64_t)(x & 1)) & random->tmat)) >> 12)
+    conv.u = ((x ^ (-((int64_t)(x & 1)) & tmat)) >> 12)
 	| UINT64_C(0x3ff0000000000001);
     return conv.d;
 }
@@ -262,8 +276,8 @@ static void period_certification(tinymt64_t * random) {
  * @param seed a 64-bit unsigned integer used as a seed.
  */
 void tinymt64_init(tinymt64_t * random, uint64_t seed) {
-    random->status[0] = seed ^ ((uint64_t)random->mat1 << 32);
-    random->status[1] = random->mat2 ^ random->tmat;
+    random->status[0] = seed ^ ((uint64_t)mat1 << 32);
+    random->status[1] = mat2 ^ tmat;
     for (int i = 1; i < MIN_LOOP; i++) {
 	random->status[i & 1] ^= i + UINT64_C(6364136223846793005)
 	    * (random->status[(i - 1) & 1]
@@ -290,9 +304,9 @@ void tinymt64_init_by_array(tinymt64_t * random, const uint64_t init_key[],
     uint64_t st[4];
 
     st[0] = 0;
-    st[1] = random->mat1;
-    st[2] = random->mat2;
-    st[3] = random->tmat;
+    st[1] = mat1;
+    st[2] = mat2;
+    st[3] = tmat;
     if (key_length + 1 > MIN_LOOP) {
 	count = key_length + 1;
     } else {

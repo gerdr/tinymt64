@@ -261,11 +261,13 @@ static uint64_t ini_func2(uint64_t x) {
  * @param random tinymt state vector.
  */
 static void period_certification(uint64_t * random) {
+#if 0
     if ((random[0] & TINYMT64_MASK) == 0 &&
 	random[1] == 0) {
 	random[0] = 'T';
 	random[1] = 'M';
     }
+#endif
 }
 
 /**

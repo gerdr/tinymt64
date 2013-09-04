@@ -51,12 +51,12 @@ void tinymt64_init_by_array(uint64_t * random, const uint64_t init_key[],
  * @param random not used
  * @return always 127
  */
-inline static int tinymt64_get_mexp(
+static int tinymt64_get_mexp(
     uint64_t * random  __attribute__((unused))) {
     return TINYMT64_MEXP;
 }
 #else
-inline static int tinymt64_get_mexp(uint64_t * random) {
+static int tinymt64_get_mexp(uint64_t * random) {
     return TINYMT64_MEXP;
 }
 #endif
@@ -66,7 +66,7 @@ inline static int tinymt64_get_mexp(uint64_t * random) {
  * Users should not call this function directly.
  * @param random tinymt internal status
  */
-inline static void tinymt64_next_state(uint64_t * random) {
+static void tinymt64_next_state(uint64_t * random) {
     uint64_t x;
 
     random[0] &= TINYMT64_MASK;
@@ -87,7 +87,7 @@ inline static void tinymt64_next_state(uint64_t * random) {
  * @param random tinymt internal status
  * @return 64-bit unsigned pseudorandom number
  */
-inline static uint64_t uint64_temper(uint64_t * random) {
+static uint64_t uint64_temper(uint64_t * random) {
     uint64_t x;
 #if defined(LINEARITY_CHECK)
     x = random[0] ^ random[1];
@@ -105,7 +105,7 @@ inline static uint64_t uint64_temper(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (1.0 <= r < 2.0)
  */
-inline static double uint64_temper_conv(uint64_t * random) {
+static double uint64_temper_conv(uint64_t * random) {
     uint64_t x;
     union {
 	uint64_t u;
@@ -128,7 +128,7 @@ inline static double uint64_temper_conv(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (1.0 < r < 2.0)
  */
-inline static double uint64_temper_conv_open(uint64_t * random) {
+static double uint64_temper_conv_open(uint64_t * random) {
     uint64_t x;
     union {
 	uint64_t u;
@@ -150,7 +150,7 @@ inline static double uint64_temper_conv_open(uint64_t * random) {
  * @param random tinymt internal status
  * @return 64-bit unsigned integer r (0 <= r < 2^64)
  */
-inline static uint64_t tinymt64_generate_uint64(uint64_t * random) {
+static uint64_t tinymt64_generate_uint64(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper(random);
 }
@@ -161,7 +161,7 @@ inline static uint64_t tinymt64_generate_uint64(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (0.0 <= r < 1.0)
  */
-inline static double tinymt64_generate_double(uint64_t * random) {
+static double tinymt64_generate_double(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper(random) * TINYMT64_MUL;
 }
@@ -172,7 +172,7 @@ inline static double tinymt64_generate_double(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (0.0 <= r < 1.0)
  */
-inline static double tinymt64_generate_double01(uint64_t * random) {
+static double tinymt64_generate_double01(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper_conv(random) - 1.0;
 }
@@ -183,7 +183,7 @@ inline static double tinymt64_generate_double01(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (1.0 <= r < 2.0)
  */
-inline static double tinymt64_generate_double12(uint64_t * random) {
+static double tinymt64_generate_double12(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper_conv(random);
 }
@@ -194,7 +194,7 @@ inline static double tinymt64_generate_double12(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (0.0 < r <= 1.0)
  */
-inline static double tinymt64_generate_doubleOC(uint64_t * random) {
+static double tinymt64_generate_doubleOC(uint64_t * random) {
     tinymt64_next_state(random);
     return 2.0 - uint64_temper_conv(random);
 }
@@ -205,7 +205,7 @@ inline static double tinymt64_generate_doubleOC(uint64_t * random) {
  * @param random tinymt internal status
  * @return floating point number r (0.0 < r < 1.0)
  */
-inline static double tinymt64_generate_doubleOO(uint64_t * random) {
+static double tinymt64_generate_doubleOO(uint64_t * random) {
     tinymt64_next_state(random);
     return uint64_temper_conv_open(random) - 1.0;
 }
